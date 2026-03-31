@@ -52,6 +52,12 @@ jobs:
           cd web
           npm ci
 
+      - name: Install dependencies
+        run: |
+          cd web
+          npm ci
+          npx playwright install
+
       - name: Run lint & tests
         run: |
           cd web
