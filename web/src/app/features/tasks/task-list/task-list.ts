@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TaskService } from '../../../core/services/task';
 import { catchError, Observable, of, Subject, switchMap, startWith } from 'rxjs';
 import { Task } from '../../../core/models/task.model';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-task-list',
@@ -14,14 +14,20 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angu
 })
 export class TaskList {
 
+  private taskService = inject(TaskService);
+  private fb = inject(FormBuilder);
+
   private refresh$ = new Subject<void>();
 
   loading = true;
   error = false;
   editingTaskId: number | null = null;
-  editTitle: string = '';
+  editTitle = '';
 
-  form!: ReturnType<FormBuilder['group']>;
+  form = this.fb.nonNullable.group({
+    title: this.fb.nonNullable.control<string>(''),
+    priority: this.fb.nonNullable.control<'low' | 'medium' | 'high'>('medium')
+  });
 
   tasks$: Observable<Task[]> = this.refresh$.pipe(
     startWith(void 0),
@@ -35,13 +41,6 @@ export class TaskList {
       return of([]);
     })
   );
-
-  constructor(private taskService: TaskService, private fb: FormBuilder) {
-    this.form = this.fb.nonNullable.group({
-      title: ['', Validators.required],
-      priority: ['medium']
-    });
-  }
 
   refresh() {
     this.refresh$.next();

@@ -14,32 +14,45 @@
     <button type="submit" [disabled]="form.invalid">Add Task</button>
   </form>
 
-  <div *ngIf="loading" class="status loading">Loading tasks...</div>
-  <div *ngIf="error" class="status error">Error loading tasks 😢</div>
+  @if (loading) {
+  <div class="status loading">Loading tasks...</div>
+  }
 
-  <div class="tasks-list" *ngIf="(tasks$ | async) as tasks">
-    <div *ngIf="tasks.length === 0" class="empty">
+  @if (error) {
+  <div class="status error">Error loading tasks 😢</div>
+  }
+
+  @if (tasks$ | async; as tasks) {
+
+  <div class="tasks-list">
+
+    @if (tasks.length === 0) {
+    <div class="empty">
       No tasks yet! 🎉
     </div>
+    }
 
-    <div class="task-card" *ngFor="let task of tasks" [class.completed]="task.completed">
+    @for (task of tasks; track task.id) {
+    <div class="task-card" [class.completed]="task.completed">
 
       <input type="checkbox" [checked]="task.completed" (change)="toggle(task)" />
 
-      <ng-container *ngIf="editingTaskId === task.id; else viewMode">
-        <input type="text" [(ngModel)]="editTitle" class="edit-input" />
-        <button (click)="saveEdit(task)">💾 Save</button>
-        <button (click)="cancelEdit()">✖ Cancel</button>
-      </ng-container>
-
-      <ng-template #viewMode>
-        <span class="task-title">{{ task.title }}</span>
-        <span class="task-priority" [class]="task.priority">{{ task.priority }}</span>
-        <button (click)="startEdit(task)">✏️ Edit</button>
-        <button class="delete-btn" (click)="delete(task.id)">❌</button>
-      </ng-template>
+      @if (editingTaskId === task.id) {
+      <input type="text" [(ngModel)]="editTitle" class="edit-input" />
+      <button (click)="saveEdit(task)">💾 Save</button>
+      <button (click)="cancelEdit()">✖ Cancel</button>
+      } @else {
+      <span class="task-title">{{ task.title }}</span>
+      <span class="task-priority" [class]="task.priority">{{ task.priority }}</span>
+      <button (click)="startEdit(task)">✏️ Edit</button>
+      <button class="delete-btn" (click)="delete(task.id)">❌</button>
+      }
 
     </div>
+    }
+
   </div>
+
+  }
 
 </div>
