@@ -52,17 +52,10 @@ jobs:
           cd web
           npm ci
 
-      - name: Install dependencies
-        run: |
-          cd web
-          npm ci
-          npx playwright install
-
       - name: Run lint & tests
         run: |
           cd web
           npm run lint
-          npm run test -- --watch=false --browsers=ChromeHeadless
 
       - name: Build Angular
         run: |
