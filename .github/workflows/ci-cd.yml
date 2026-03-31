@@ -1,0 +1,90 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-backend:
+    name: Build .NET Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5.2.0
+        with:
+          dotnet-version: '10.0.x ' 
+
+      - name: Restore dependencies
+        run: dotnet restore api/ProductivityApi.sln
+
+      - name: Build
+        run: dotnet build api/ProductivityApi.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test api/ProductivityApi.sln --no-build --verbosity normal
+
+      - name: Publish
+        run: dotnet publish api/ProductivityApi.sln -c Release -o api/publish
+
+  build-frontend:
+    name: Build Angular Frontend
+    runs-on: ubuntu-latest
+    needs: build-backend
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21'
+
+      - name: Install dependencies
+        run: |
+          cd web
+          npm ci
+
+      - name: Run lint & tests
+        run: |
+          cd web
+          npm run lint
+          npm run test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build Angular
+        run: |
+          cd web
+          npm run build -- --configuration production
+
+  deploy-to-aws:
+    name: Deploy to AWS (placeholder)
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6.0.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy Backend
+        run: |
+          echo "Here you can zip api/publish and push to AWS Elastic Beanstalk or ECS"
+          # zip -r backend.zip api/publish
+          # aws s3 cp backend.zip s3://your-bucket/
+          # aws elasticbeanstalk create-application-version ...
+
+      - name: Deploy Frontend
+        run: |
+          echo "Here you can deploy web/dist to S3 + CloudFront"
+          # пример:
+          # aws s3 sync web/dist s3://your-frontend-bucket/ --delete
+          # aws cloudfront create-invalidation --distribution-id XYZ --paths "/*"
