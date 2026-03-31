@@ -45,7 +45,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '21'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
@@ -63,31 +63,31 @@ jobs:
           cd web
           npm run build -- --configuration production
 
-  deploy-to-aws:
-    name: Deploy to AWS (placeholder)
-    runs-on: ubuntu-latest
-    needs: [build-backend, build-frontend]
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6.0.2
+  # deploy-to-aws:
+  #   name: Deploy to AWS (placeholder)
+  #   runs-on: ubuntu-latest
+  #   needs: [build-backend, build-frontend]
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v6.0.2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v2
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
 
-      - name: Deploy Backend
-        run: |
-          echo "Here you can zip api/publish and push to AWS Elastic Beanstalk or ECS"
-          # zip -r backend.zip api/publish
-          # aws s3 cp backend.zip s3://your-bucket/
-          # aws elasticbeanstalk create-application-version ...
+  #     - name: Deploy Backend
+  #       run: |
+  #         echo "Here you can zip api/publish and push to AWS Elastic Beanstalk or ECS"
+  #         # zip -r backend.zip api/publish
+  #         # aws s3 cp backend.zip s3://your-bucket/
+  #         # aws elasticbeanstalk create-application-version ...
 
-      - name: Deploy Frontend
-        run: |
-          echo "Here you can deploy web/dist to S3 + CloudFront"
-          # пример:
-          # aws s3 sync web/dist s3://your-frontend-bucket/ --delete
-          # aws cloudfront create-invalidation --distribution-id XYZ --paths "/*"
+  #     - name: Deploy Frontend
+  #       run: |
+  #         echo "Here you can deploy web/dist to S3 + CloudFront"
+  #         # пример:
+  #         # aws s3 sync web/dist s3://your-frontend-bucket/ --delete
+  #         # aws cloudfront create-invalidation --distribution-id XYZ --paths "/*"
