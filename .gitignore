@@ -2,14 +2,16 @@
 api/bin/
 api/obj/
 api/.vs/
+.vs/
 
-# Frontend (Angular)
+# Angular / Node
 web/node_modules/
-web/dist/
 web/.angular/
+web/dist/
+web/.vite/
+
+# VSCode
+.vscode/
 
 # Env
 *.env
-
-# Secrets
-appsettings.Development.json

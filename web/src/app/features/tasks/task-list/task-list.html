@@ -1,0 +1,45 @@
+<div class="app-container">
+
+  <h1>📝 Productivity App</h1>
+
+  <form [formGroup]="form" (ngSubmit)="add()" class="task-form">
+    <input type="text" formControlName="title" placeholder="What needs to be done?" />
+
+    <select formControlName="priority">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <button type="submit" [disabled]="form.invalid">Add Task</button>
+  </form>
+
+  <div *ngIf="loading" class="status loading">Loading tasks...</div>
+  <div *ngIf="error" class="status error">Error loading tasks 😢</div>
+
+  <div class="tasks-list" *ngIf="(tasks$ | async) as tasks">
+    <div *ngIf="tasks.length === 0" class="empty">
+      No tasks yet! 🎉
+    </div>
+
+    <div class="task-card" *ngFor="let task of tasks" [class.completed]="task.completed">
+
+      <input type="checkbox" [checked]="task.completed" (change)="toggle(task)" />
+
+      <ng-container *ngIf="editingTaskId === task.id; else viewMode">
+        <input type="text" [(ngModel)]="editTitle" class="edit-input" />
+        <button (click)="saveEdit(task)">💾 Save</button>
+        <button (click)="cancelEdit()">✖ Cancel</button>
+      </ng-container>
+
+      <ng-template #viewMode>
+        <span class="task-title">{{ task.title }}</span>
+        <span class="task-priority" [class]="task.priority">{{ task.priority }}</span>
+        <button (click)="startEdit(task)">✏️ Edit</button>
+        <button class="delete-btn" (click)="delete(task.id)">❌</button>
+      </ng-template>
+
+    </div>
+  </div>
+
+</div>
