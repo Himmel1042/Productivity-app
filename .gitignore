@@ -1,0 +1,15 @@
+# Backend (.NET)
+api/bin/
+api/obj/
+api/.vs/
+
+# Frontend (Angular)
+web/node_modules/
+web/dist/
+web/.angular/
+
+# Env
+*.env
+
+# Secrets
+appsettings.Development.json
